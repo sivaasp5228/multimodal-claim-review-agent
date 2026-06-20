@@ -25,24 +25,44 @@ Read [`problem_statement.md`](./problem_statement.md) for the full task spec, in
 
 ## Repository layout
 
+![Pipeline Architecture Diagram](./pipeline_diagram.png)
+
 ```text
 .
-├── AGENTS.md                         # Rules for AI coding tools + transcript logging
+├── .gitignore                        # Files to ignore (secrets, python cache)
+├── AGENTS.md                         # Onboarding agreements and conversation logging spec
+├── pipeline_diagram.png              # Claim verification system architecture diagram
 ├── problem_statement.md              # Full task description and I/O schema
-├── README.md                         # You are here
-├── code/                             # Build your solution here
-│   ├── main.py                       # Suggested terminal entry point
-│   └── evaluation/
-│       └── main.py                   # Suggested evaluation entry point
-└── dataset/
-    ├── sample_claims.csv             # Inputs + expected outputs for development
-    ├── claims.csv                    # Inputs only; run your system on these rows
-    ├── user_history.csv              # Historical claim counts and risk context
-    ├── evidence_requirements.csv     # Minimum image evidence requirements
-    └── images/
-        ├── sample/                   # Images referenced by sample_claims.csv
-        └── test/                     # Images referenced by claims.csv
+├── README.md                         # Project documentation (You are here)
+├── sample_output.csv                 # Evaluation predictions generated from sample_claims.csv
+├── output.csv                        # Final test predictions generated from claims.csv
+├── code/                             # Multi-modal review agent implementation
+│   ├── README.md                     # Code base overview & setup instructions
+│   ├── main.py                       # Main pipeline orchestrator (claims.csv -> output.csv)
+│   ├── schemas.py                    # Strict Pydantic model schemas and allowed value enums
+│   ├── claim_extractor.py            # NLP parsing of raw chat conversations (English/Hindi/Spanish/Chinese)
+│   ├── vision_analyzer.py            # Google Gemini 3.1 Flash Lite visual analysis engine with caching
+│   ├── evidence_checker.py           # Verification of claims against evidence_requirements.csv rules
+│   ├── risk_engine.py                # Lookup and propagation of risk factors from user_history.csv
+│   ├── decision_engine.py            # Final claims decision processor applying overrides and business rules
+│   ├── output_generator.py           # Validation checks and output.csv generation
+│   ├── requirements.txt              # Project dependencies
+│   ├── vlm_cache.json                # Local cache of VLM call responses for speed and cost-savings
+│   └── evaluation/                   # Verification and strategy evaluation suite
+│       ├── main.py                   # Evaluation runner entry point (sample_claims.csv -> sample_output.csv)
+│       ├── evaluate.py               # Evaluates and generates evaluation_report.md
+│       ├── metrics.py                # Core accuracy and F1 metrics calculators
+│       └── evaluation_report.md      # Performance report including status confusion matrices
+└── dataset/                          # Datasets provided by the challenge
+    ├── sample_claims.csv             # Ground truth verification set
+    ├── claims.csv                    # Evaluation test set (44 rows)
+    ├── user_history.csv              # Claims history and risk contexts for users
+    ├── evidence_requirements.csv     # Minimum validation conditions per issue family
+    └── images/                       # Folder containing evidence photos
+        ├── sample/                   # Image folders referenced by sample_claims.csv
+        └── test/                     # Image folders referenced by claims.csv
 ```
+
 
 ---
 
@@ -159,3 +179,12 @@ Before submitting, confirm:
 After submission, the AI Judge may ask about your approach, implementation decisions, model usage, evaluation strategy, and how you used AI while building the solution.
 
 Be prepared to explain your solution in detail.
+
+Built for HackerRank Orchestrate June 2026 Challenge - SIVAA SP
+
+Features:
+- Multi-modal claim verification
+- Gemini Vision integration
+- Rule-based evidence validation
+- Risk assessment engine
+- Evaluation framework
